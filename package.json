@@ -26,7 +26,52 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "linebreak-style": "off",
+      "indent": [
+        "warn",
+        4
+      ],
+      "react/jsx-indent": [
+        "warn",
+        4
+      ],
+      "react/jsx-indent-props": [
+        2,
+        4
+      ],
+      "jsx-quotes": [
+        2,
+        "prefer-double"
+      ],
+      "quotes": [
+        2,
+        "double"
+      ],
+      "no-plusplus": "off",
+      "max-len": "warn",
+      "react/forbid-prop-types": "warn",
+      "no-multiple-empty-lines": [
+        "error",
+        {
+          "max": 2
+        }
+      ],
+      "react/jsx-props-no-spreading": [
+        1
+      ],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [
+            ".js",
+            ".jsx",
+            ".tsx"
+          ]
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [
