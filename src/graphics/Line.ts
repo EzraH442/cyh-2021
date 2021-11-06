@@ -12,7 +12,7 @@ class Line extends Drawable {
 
     public vertices: Vector[] = [];
 
-    public draw(ctx: CanvasRenderingContext2D) {
+    public draw(ctx: CanvasRenderingContext2D): void {
         ctx.beginPath();
         ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
         ctx.strokeStyle = this.lineColor.hexCode;

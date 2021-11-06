@@ -1,4 +1,4 @@
-import { Colors, randomColor } from "../graphics/Color";
+import Color, { Colors, randomColor } from "../graphics/Color";
 import Drawable from "../graphics/Drawable";
 import Circle from "../graphics/Circle";
 import Line from "../graphics/Line";
@@ -30,7 +30,7 @@ class TempBall extends Drawable {
         return newBall;
     }
 
-    public changeRadius(deltaR: number) {
+    public changeRadius(deltaR: number): void {
         if (deltaR + this.circle.getRadius() >= 0) {
             this.circle.setRadius(this.circle.getRadius() + deltaR);
         }
@@ -50,9 +50,14 @@ class TempBall extends Drawable {
         this.tempLine.vertices[1] = newPos;
     }
 
-    public draw(ctx: CanvasRenderingContext2D) {
-        this.circle.draw(ctx);
+    public setFillColor(fillColor: Color): void {
+        this.circle.setFillColor(fillColor);
+        this.tempLine.setLineColor(fillColor);
+    }
+
+    public draw(ctx: CanvasRenderingContext2D): void {
         this.tempLine.draw(ctx);
+        this.circle.draw(ctx);
     }
 
     private circle: Circle;
