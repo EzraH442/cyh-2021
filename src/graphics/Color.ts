@@ -13,12 +13,12 @@ class Color {
 const Colors: Record<string, Color> = {
     White: new Color("#FFFFFF"),
     Black: new Color("#000000"),
-    Red: new Color("#F0000"),
+    Red: new Color("#FF0000"),
     Green: new Color("#00FF00"),
     Blue: new Color("#0000FF"),
     Yellow: new Color("#FFFF00"),
     Cyan: new Color("#00FFFF"),
-    Magenta: new Color("FF00FF"),
+    Magenta: new Color("#FF00FF"),
 };
 
 function randomColor(): Color {
