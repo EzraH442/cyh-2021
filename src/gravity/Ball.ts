@@ -1,10 +1,27 @@
 import Circle from "../graphics/Circle";
+import Line from "../graphics/Line";
 import Vector, { add as Vadd } from "../graphics/Vector";
+
+const TRAIL_LIFETIME = 100;
 
 class Ball extends Circle {
     constructor(r: number) {
         super(r);
         this.mass = (4 / 3) * r * r * r * Math.PI;
+        this.trail = new Line();
+        this.trail.setLineThickness(this.getRadius() / 3);
+        this.trail.setLineCap("round");
+    }
+
+    public draw(ctx: CanvasRenderingContext2D) {
+        super.draw(ctx);
+
+        if (this.trail.vertices.length > TRAIL_LIFETIME) {
+            this.trail.vertices.shift();
+        }
+        this.trail.vertices.push(this.position);
+
+        this.trail.draw(ctx);
     }
 
     public getVelocity(): Vector {
@@ -26,6 +43,8 @@ class Ball extends Circle {
     private velocity: Vector = { x: 0, y: 0 };
 
     private mass: number;
+
+    private trail: Line;
 }
 
 export default Ball;

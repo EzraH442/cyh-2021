@@ -2,6 +2,8 @@ import Color, { Colors } from "./Color";
 import Drawable from "./Drawable";
 import Vector from "./Vector";
 
+type LineCap = "butt" | "round" | "square";
+
 class Line extends Drawable {
     constructor(length?: number) {
         super();
@@ -15,11 +17,10 @@ class Line extends Drawable {
         ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
         ctx.strokeStyle = this.lineColor.hexCode;
         ctx.lineWidth = this.lineThickness;
-
+        ctx.lineCap = this.lineCap;
         for (let i = 1; i < this.vertices.length; i++) {
             ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
         }
-
         ctx.stroke();
     }
 
@@ -39,9 +40,15 @@ class Line extends Drawable {
         this.lineThickness = lineThickness;
     }
 
+    public setLineCap(lineCap: LineCap): void {
+        this.lineCap = lineCap;
+    }
+
     private lineColor: Color = Colors.White;
 
     private lineThickness = 1;
+
+    private lineCap: LineCap = "butt";
 }
 
 export default Line;
