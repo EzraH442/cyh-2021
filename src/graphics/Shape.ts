@@ -1,9 +1,8 @@
 import Drawable from "./Drawable";
-import Vector, {add as Vadd} from "./Vector";
-import Color, {Colors} from "./Color"
+import Vector, { add as Vadd } from "./Vector";
+import Color, { Colors } from "./Color";
 
 abstract class Shape extends Drawable {
-    
     public setFillColor(c : Color): void {
         this.fillColor = c;
     }
@@ -27,7 +26,7 @@ abstract class Shape extends Drawable {
     public getOutlineThickness(): number {
         return this.outlineThickness;
     }
-    
+
     public setPosition(pos: Vector): void {
         this.position = pos;
     }
@@ -41,10 +40,12 @@ abstract class Shape extends Drawable {
     }
 
     protected fillColor: Color = Colors.White;
+
     protected outlineColor: Color = Colors.White;
-    protected outlineThickness: number = 0;
-    protected position: Vector = {x: 0, y: 0};
-    
+
+    protected outlineThickness = 0;
+
+    protected position: Vector = { x: 0, y: 0 };
 }
 
-export default Shape
+export default Shape;
