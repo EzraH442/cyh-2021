@@ -1,11 +1,10 @@
 import Circle from "../graphics/Circle";
-import Vector, {add as Vadd} from "../graphics/Vector";
+import Vector, { add as Vadd } from "../graphics/Vector";
 
 class Ball extends Circle {
-
     constructor(r: number) {
         super(r);
-        this.mass = 4/3 * r*r*r * Math.PI;
+        this.mass = (4 / 3) * r * r * r * Math.PI;
     }
 
     public getVelocity(): Vector {
@@ -13,7 +12,7 @@ class Ball extends Circle {
     }
 
     public setVelocity(velocity: Vector): void {
-        this.velocity = velocity
+        this.velocity = velocity;
     }
 
     public accelerate(accel: Vector): void {
@@ -24,7 +23,8 @@ class Ball extends Circle {
         return this.mass;
     }
 
-    private velocity: Vector = {x: 0, y: 0};
+    private velocity: Vector = { x: 0, y: 0 };
+
     private mass: number;
 }
 
