@@ -35,7 +35,18 @@
       ],
       "react/jsx-indent": [
         "warn",
-        4
+        4,        
+        {
+          "FunctionDeclaration": {
+            "parameters": "first"
+          },
+          "FunctionExpression": {
+            "parameters": "first"
+          },
+          "CallExpression": {
+            "parameters": "first"
+          }
+        }
       ],
       "react/jsx-indent-props": [
         2,
