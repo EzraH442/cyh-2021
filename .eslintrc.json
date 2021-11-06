@@ -39,6 +39,7 @@
         "max-len": "warn",
         "react/forbid-prop-types": "warn",
         "no-multiple-empty-lines": ["error", {"max": 2}],
+        "brace-style": [2, "stroustrup"],
         "react/jsx-props-no-spreading": [1],
         "import/extensions": [
             "error",
