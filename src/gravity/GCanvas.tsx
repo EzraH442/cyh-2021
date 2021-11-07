@@ -3,12 +3,18 @@ import Ball from "./Ball";
 import TempBall from "./TempBall";
 import { handleBallCollisions, handleGravity, handleWallCollisions } from "./physics";
 
-import Vector from "../graphics/Vector";
-import Color, { Colors } from "../graphics/Color";
+import Vector, { divide as Vdivide } from "../graphics/Vector";
+import Color from "../graphics/Color";
 
 type GProps = {
     width: number,
     height: number
+    FPS: number,
+    fillColor: Color,
+    constants: {
+        GC: number,
+        E_LOSS_COLLISION: number,
+    }
 };
 
 
@@ -25,8 +31,6 @@ type GState = {
     pressedKeys: Set<string>
 };
 
-const FPS = 100;
-const FILL_COLOR: Color = Colors.Black;
 const MOUSE_LEFT = 0;
 
 class GCanvas extends React.Component<GProps, GState> {
@@ -49,6 +53,7 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     componentDidMount(): void {
+        const { FPS } = this.props;
         const canvas = this.canvasRef.current;
         const context = canvas?.getContext("2d");
 
@@ -65,6 +70,28 @@ class GCanvas extends React.Component<GProps, GState> {
         window.addEventListener("wheel", this.mouseScrollHandler);
         window.addEventListener("mousemove", this.mouseMoveHandler);
         this.render();
+    }
+
+    componentDidUpdate(prevProps: GProps): void {
+        const { FPS } = this.props;
+
+        if (prevProps.FPS !== FPS) {
+            const canvas = this.canvasRef.current;
+            const context = canvas?.getContext("2d");
+
+            const intervalID = (context)
+                ? window.setInterval((() => this.update(context)), 1000 / FPS) as unknown as number
+                : null;
+
+
+            const { balls } = this.state;
+
+            for (let i = 0; i < balls.length; i++) {
+                balls[i].setTrailLifetime(FPS);
+            }
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ intervalID });
+        }
     }
 
     componentWillUnmount(): void {
@@ -97,9 +124,9 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     clearScreen = (ctx: CanvasRenderingContext2D): void => {
-        const { width, height } = this.props;
+        const { width, height, fillColor } = this.props;
 
-        ctx.fillStyle = FILL_COLOR.hexCode;
+        ctx.fillStyle = fillColor.hexCode;
         ctx.fillRect(0, 0, width, height);
     }
 
@@ -114,10 +141,10 @@ class GCanvas extends React.Component<GProps, GState> {
 
     addTempDrawableToDrawables = () => {
         const { tempBall, balls, worldData } = this.state;
-
+        const { FPS } = this.props;
         if (tempBall === null) return;
 
-        const newBall = tempBall.toBall();
+        const newBall = tempBall.toBall(FPS);
         balls.push(newBall);
 
         worldData.isCreatingNewBall = false;
@@ -159,7 +186,7 @@ class GCanvas extends React.Component<GProps, GState> {
             this.setState({ worldData });
         }
         else if (worldData.isMovingEndpoint) {
-            worldData.isMovingEndpoint = true;
+            worldData.isMovingEndpoint = false;
             this.setState({ worldData });
         }
     }
@@ -197,30 +224,37 @@ class GCanvas extends React.Component<GProps, GState> {
         this.removeKeyPress(e.key);
     }
 
-    update = (ctx: CanvasRenderingContext2D) => {
+    update = async (ctx: CanvasRenderingContext2D) => {
         this.clearScreen(ctx);
 
         const {
             balls, tempBall, pressedKeys, worldData,
         } = this.state;
-        const { width, height } = this.props;
+        const {
+            width, height, FPS, constants,
+        } = this.props;
         let b1: Ball;
         let b2: Ball;
 
+        const collisions = [];
+
         for (let i = 0; i < balls.length; i++) {
             b1 = balls[i];
-            b1.move(b1.getVelocity());
+            b1.move(Vdivide(FPS, b1.getVelocity()));
 
-            handleWallCollisions(b1, width, height, FPS);
+            collisions.push(handleWallCollisions(b1, width, height));
 
             for (let j = i + 1; j < balls.length; j++) {
                 b2 = balls[j];
-                handleGravity(b1, b2, FPS);
-                handleBallCollisions(b1, b2, FPS);
+                handleGravity(b1, b2, FPS, constants.GC);
+                collisions.push(handleBallCollisions(b1, b2, FPS));
             }
+
 
             b1.draw(ctx);
         }
+
+        await Promise.all(collisions);
 
         if (worldData.isCreatingNewBall) {
             tempBall?.draw(ctx);

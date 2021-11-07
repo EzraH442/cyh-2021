@@ -17,8 +17,8 @@ class TempBall extends Drawable {
         this.tempLine.vertices[1] = pos;
     }
 
-    public toBall(): Ball {
-        const newBall: Ball = new Ball(this.circle.getRadius());
+    public toBall(FPS: number): Ball {
+        const newBall: Ball = new Ball(this.circle.getRadius(), FPS);
 
         newBall.setPosition(this.circle.getPosition());
         newBall.setVelocity(Vsubtract(

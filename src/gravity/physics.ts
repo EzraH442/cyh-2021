@@ -1,3 +1,4 @@
+import { relative } from "path";
 import Ball from "./Ball";
 import Vector, {
     subtract, multiply, divide, dotProduct,
@@ -7,14 +8,17 @@ function distanceSquared(v1: Vector, v2: Vector): number {
     return (v2.x - v1.x) ** 2 + (v2.y - v1.y) ** 2;
 }
 
+function magnitudeSquared(v: Vector): number {
+    return v.x ** 2 + v.y ** 2;
+}
+
 function normalize(v: Vector): Vector {
-    const mag = Math.sqrt(v.x ** 2 + v.y ** 2);
+    const mag = Math.sqrt(magnitudeSquared(v));
     return divide(mag, v);
 }
 
-const GC = 1; // gravitation constant
 
-function handleGravity(b1: Ball, b2: Ball, fps: number): void {
+function handleGravity(b1: Ball, b2: Ball, FPS: number, GC: number): void {
     /*
 
     F = ma
@@ -31,70 +35,104 @@ function handleGravity(b1: Ball, b2: Ball, fps: number): void {
 
     const normalizedDirection: Vector = normalize(subtract(b2.getPosition(), b1.getPosition()));
 
-    b1.accelerate(multiply(((GC * Fg) / b1.getMass()) / fps, normalizedDirection));
-    b2.accelerate(multiply(((GC * -Fg) / b2.getMass()) / fps, normalizedDirection));
+    b1.accelerate(multiply(((GC * Fg) / b1.getMass()) / FPS, normalizedDirection));
+    b2.accelerate(multiply(((GC * -Fg) / b2.getMass()) / FPS, normalizedDirection));
 }
 
-function handleWallCollisions(b: Ball, w: number, h: number, fps: number): void {
+
+async function determineMTVHorizontal(b: Ball, w: number): Promise<number> {
+    const pos: Vector = b.getPosition();
+    const r: number = b.getRadius();
+    if (pos.x + r > w) {
+        return -1 * (pos.x + r - w);
+    }
+
+    return -1 * (pos.x - r);
+}
+
+async function determineMTVVertical(b: Ball, h: number): Promise<number> {
+    const pos: Vector = b.getPosition();
+    const r: number = b.getRadius();
+    if (pos.y + r > h) {
+        return -1 * (pos.y + r - h);
+    }
+
+    return -1 * (pos.y - r);
+}
+
+async function handleWallCollisions(b: Ball, w: number, h: number): Promise<void> {
     const pos: Vector = b.getPosition();
     const r: number = b.getRadius();
 
-    if (pos.x + r > w || pos.x - r < 0) {
-        b.move(divide(fps, { x: b.getVelocity().x * -1, y: 0 }));
-        b.setVelocity({ x: -b.getVelocity().x, y: b.getVelocity().y });
+    if (pos.x + r >= w || pos.x - r <= 0) {
+        determineMTVHorizontal(b, w).then((mtv) => new Promise(() => {
+            b.move({ x: mtv, y: 0 });
+            b.setVelocity({ x: -b.getVelocity().x, y: b.getVelocity().y });
+        }));
     }
     if (pos.y + r > h || pos.y - r < 0) {
-        b.move(divide(fps, { x: 0, y: b.getVelocity().y * -1 }));
-        b.setVelocity({ x: b.getVelocity().x, y: -b.getVelocity().y });
+        determineMTVVertical(b, h).then((mtv) => new Promise(() => {
+            b.move({ x: 0, y: mtv });
+            b.setVelocity({ x: b.getVelocity().x, y: -b.getVelocity().y });
+        }));
     }
 }
 
-function handleBallCollisions(b1: Ball, b2: Ball, FPS: number): void {
+async function determineMTV2D(b1: Ball, b2: Ball): Promise<Vector> {
+    const relativePos = await Promise.resolve(subtract(b2.getPosition(), b1.getPosition()));
+    const intersectionMagnitude = await Promise.resolve(Math.sqrt(magnitudeSquared(relativePos)));
+
+    return multiply(
+        (b1.getRadius() + b2.getRadius() - intersectionMagnitude) / intersectionMagnitude,
+        relativePos,
+    );
+}
+
+async function handleBallCollisions(
+    b1: Ball,
+    b2: Ball,
+    E_LOSS: number,
+): Promise<void> {
     const relativePos: Vector = subtract(b2.getPosition(), b1.getPosition());
     const relativeVel: Vector = subtract(b2.getVelocity(), b1.getVelocity());
-
     const dot: number = dotProduct(relativePos, relativeVel);
-
-    const E_LOSS = 0.1;
-
     const centerDistSquared = distanceSquared(
         b1.getPosition(),
         b2.getPosition(),
     );
 
-    const radiusSumSquared = (b1.getRadius() + b2.getRadius()) ** 2;
+    const radiusSum = (b1.getRadius() + b2.getRadius());
 
-    if (dot < 0 && centerDistSquared < radiusSumSquared) {
-        const massSum: number = b1.getMass() + b2.getMass();
 
-        b1.move(divide(-FPS, b1.getVelocity()));
-        b2.move(divide(-FPS, b1.getVelocity()));
+    if (dot < 0 && centerDistSquared < radiusSum ** 2) {
+        const mtv = await determineMTV2D(b1, b2);
 
-        const deltaV1: Vector = multiply(
-            (
-                (((-2 * b2.getMass()) / massSum) / centerDistSquared)
-                    * dotProduct(
-                        subtract(b1.getVelocity(), b2.getVelocity()),
-                        subtract(b1.getPosition(), b2.getPosition()),
-                    )
-            ),
-            subtract(b1.getPosition(), b2.getPosition()),
-        );
+        const [im1, im2] = await Promise.all([1 / b1.getMass(), 1 / b2.getMass()]);
 
-        const deltaV2: Vector = multiply(
-            (
-                (((-2 * b1.getMass()) / massSum) / centerDistSquared)
-                    * dotProduct(
-                        subtract(b2.getVelocity(), b1.getVelocity()),
-                        subtract(b2.getPosition(), b1.getPosition()),
-                    )
-            ),
-            subtract(b2.getPosition(), b1.getPosition()),
-        );
+        const [deltaPos1, deltaPos2] = await Promise.all([
+            multiply((im1 / (im1 + im2)) * -1.0001, mtv),
+            multiply((im2 / (im1 + im2)) * 1.0001, mtv)]);
 
-        b1.accelerate(multiply(1 - E_LOSS, deltaV1));
-        b2.accelerate(multiply(1 - E_LOSS, deltaV2));
+        b1.move(deltaPos1);
+        b2.move(deltaPos2);
+
+        const v = await Promise.resolve(subtract(b1.getVelocity(), b2.getVelocity()));
+        const vn = await Promise.resolve(dotProduct(normalize(v), normalize(mtv)));
+        const impulseMag = await Promise.resolve((vn * (1 - E_LOSS)) / (im1 + im2));
+        const impulse = await Promise.resolve(multiply(
+            -impulseMag,
+            normalize(relativePos),
+        ));
+        const [deltaV1, deltaV2] = await Promise.all([
+            divide(-b1.getMass(), impulse),
+            divide(b2.getMass(), impulse)]);
+
+        return new Promise(() => {
+            b1.accelerate(deltaV1);
+            b2.accelerate(deltaV2);
+        });
     }
+    return Promise.resolve();
 }
 
 
