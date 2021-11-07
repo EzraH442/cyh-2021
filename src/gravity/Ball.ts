@@ -13,15 +13,21 @@ class Ball extends Circle {
         this.trailLifetime = FPS;
     }
 
-    public draw(ctx: CanvasRenderingContext2D): void {
-        super.draw(ctx);
+    public getDrawPromises(ctx: CanvasRenderingContext2D): [Promise<void>, Promise<void>] {
+        const [drawBall, drawTail] = [
+            new Promise<void>(() => {
+                super.draw(ctx);
+            }),
+            new Promise<void>(() => {
+                if (this.trail.vertices.length > this.trailLifetime) {
+                    this.trail.vertices.shift();
+                }
+                this.trail.vertices.push(this.position);
 
-        if (this.trail.vertices.length > this.trailLifetime) {
-            this.trail.vertices.shift();
-        }
-        this.trail.vertices.push(this.position);
-
-        this.trail.draw(ctx);
+                this.trail.draw(ctx);
+            }),
+        ];
+        return [drawBall, drawTail];
     }
 
     public setFillColor(color: Color): void {

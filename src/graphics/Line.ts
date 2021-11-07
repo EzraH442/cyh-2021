@@ -12,16 +12,18 @@ class Line extends Drawable {
 
     public vertices: Vector[] = [];
 
-    public draw(ctx: CanvasRenderingContext2D): void {
-        ctx.beginPath();
-        ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
-        ctx.strokeStyle = this.lineColor.hexCode;
-        ctx.lineWidth = this.lineThickness;
-        ctx.lineCap = this.lineCap;
-        for (let i = 1; i < this.vertices.length; i++) {
-            ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
-        }
-        ctx.stroke();
+    public async draw(ctx: CanvasRenderingContext2D): Promise<void> {
+        return new Promise(() => {
+            ctx.beginPath();
+            ctx.moveTo(this.vertices[0].x, this.vertices[0].y);
+            ctx.strokeStyle = this.lineColor.hexCode;
+            ctx.lineWidth = this.lineThickness;
+            ctx.lineCap = this.lineCap;
+            for (let i = 1; i < this.vertices.length; i++) {
+                ctx.lineTo(this.vertices[i].x, this.vertices[i].y);
+            }
+            ctx.stroke();
+        });
     }
 
     public getLineColor(): Color {

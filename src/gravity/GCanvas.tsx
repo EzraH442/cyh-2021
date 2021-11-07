@@ -14,7 +14,9 @@ type GProps = {
     constants: {
         GC: number,
         E_LOSS_COLLISION: number,
+        MAX_RADIUS: number,
     }
+    isPaused: boolean,
 };
 
 
@@ -54,14 +56,8 @@ class GCanvas extends React.Component<GProps, GState> {
 
     componentDidMount(): void {
         const { FPS } = this.props;
-        const canvas = this.canvasRef.current;
-        const context = canvas?.getContext("2d");
 
-        const intervalID = (context)
-            ? window.setInterval((() => this.update(context)), 1000 / FPS) as unknown as number
-            : null;
-
-        this.setState({ intervalID });
+        this.restartWithFPS(FPS);
 
         window.addEventListener("mousedown", this.clickDownHandler);
         window.addEventListener("mouseup", this.clickUpHandler);
@@ -73,24 +69,16 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     componentDidUpdate(prevProps: GProps): void {
-        const { FPS } = this.props;
+        const { FPS, isPaused } = this.props;
 
-        if (prevProps.FPS !== FPS) {
-            const canvas = this.canvasRef.current;
-            const context = canvas?.getContext("2d");
-
-            const intervalID = (context)
-                ? window.setInterval((() => this.update(context)), 1000 / FPS) as unknown as number
-                : null;
-
-
-            const { balls } = this.state;
-
-            for (let i = 0; i < balls.length; i++) {
-                balls[i].setTrailLifetime(FPS);
-            }
-            // eslint-disable-next-line react/no-did-update-set-state
-            this.setState({ intervalID });
+        if (prevProps.isPaused === true && isPaused === false) {
+            this.restartWithFPS(FPS);
+        }
+        else if (prevProps.isPaused === false && isPaused === true) {
+            this.stop();
+        }
+        else if (prevProps.FPS !== FPS) {
+            this.restartWithFPS(FPS);
         }
     }
 
@@ -210,9 +198,11 @@ class GCanvas extends React.Component<GProps, GState> {
 
     mouseScrollHandler = (e: globalThis.WheelEvent) => {
         const { tempBall, worldData } = this.state;
+        const { constants } = this.props;
 
-        if (worldData.isCreatingNewBall) {
-            tempBall?.changeRadius(e.deltaY / 50);
+        if (tempBall && worldData.isCreatingNewBall
+            && tempBall.getCirlceRadius() + e.deltaY / 50 < constants.MAX_RADIUS) {
+            tempBall.changeRadius(e.deltaY / 50);
         }
     }
 
@@ -236,36 +226,44 @@ class GCanvas extends React.Component<GProps, GState> {
         let b1: Ball;
         let b2: Ball;
 
-        const collisions = [];
+        const physicsEvents: Promise<void>[] = [];
+        const drawBallEvents: Promise<void>[] = [];
+        const drawTrailEvents: Promise<void>[] = [];
 
         for (let i = 0; i < balls.length; i++) {
             b1 = balls[i];
             b1.move(Vdivide(FPS, b1.getVelocity()));
 
-            collisions.push(handleWallCollisions(b1, width, height));
+            physicsEvents.push(handleWallCollisions(b1, width, height));
 
             for (let j = i + 1; j < balls.length; j++) {
                 b2 = balls[j];
-                handleGravity(b1, b2, FPS, constants.GC);
-                collisions.push(handleBallCollisions(b1, b2, FPS));
+                physicsEvents.push(handleGravity(b1, b2, FPS, constants.GC));
+                physicsEvents.push(handleBallCollisions(b1, b2, FPS));
             }
 
-
-            b1.draw(ctx);
+            const [drawBallPromise, drawTailPromise] = b1.getDrawPromises(ctx);
+            drawBallEvents.push(drawBallPromise);
+            drawTrailEvents.push(drawTailPromise);
         }
 
-        await Promise.all(collisions);
 
-        if (worldData.isCreatingNewBall) {
-            tempBall?.draw(ctx);
+        if (tempBall && worldData.isCreatingNewBall) {
+            drawBallEvents.push(tempBall.draw(ctx));
         }
 
         if (pressedKeys.has("Enter") && worldData.isCreatingNewBall) {
             this.addTempDrawableToDrawables();
         }
+
+        Promise.all(physicsEvents).then(() => {
+            Promise.all(drawTrailEvents);
+        }).then(() => {
+            Promise.all(drawBallEvents);
+        });
     };
 
-    pause = (): void => {
+    stop = (): void => {
         const { intervalID } = this.state;
 
         if (intervalID) clearInterval(intervalID);
@@ -273,14 +271,35 @@ class GCanvas extends React.Component<GProps, GState> {
         this.setState({ intervalID: null });
     }
 
+    restartWithFPS = (FPS: number): void => {
+        const canvas = this.canvasRef.current;
+        const context = canvas?.getContext("2d");
+
+        const intervalID = (context)
+            ? window.setInterval((() => this.update(context)), 1000 / FPS) as unknown as number
+            : null;
+
+
+        const { balls } = this.state;
+
+        for (let i = 0; i < balls.length; i++) {
+            balls[i].setTrailLifetime(FPS);
+        }
+        // eslint-disable-next-line react/no-did-update-set-state
+        this.setState({ intervalID });
+    }
+
     canvasRef;
 
     render(): JSX.Element {
+        const { width, height } = this.props;
+
         return (
             <canvas
                 ref={this.canvasRef}
                 tabIndex={0}
-                {...this.props}
+                width={width}
+                height={height}
             />
         );
     }

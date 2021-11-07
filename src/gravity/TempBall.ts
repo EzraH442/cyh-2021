@@ -55,9 +55,11 @@ class TempBall extends Drawable {
         this.tempLine.setLineColor(fillColor);
     }
 
-    public draw(ctx: CanvasRenderingContext2D): void {
-        this.tempLine.draw(ctx);
-        this.circle.draw(ctx);
+    public async draw(ctx: CanvasRenderingContext2D): Promise<void> {
+        return new Promise(() => {
+            this.tempLine.draw(ctx);
+            this.circle.draw(ctx);
+        });
     }
 
     private circle: Circle;

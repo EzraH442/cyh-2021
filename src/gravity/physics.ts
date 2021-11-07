@@ -1,4 +1,3 @@
-import { relative } from "path";
 import Ball from "./Ball";
 import Vector, {
     subtract, multiply, divide, dotProduct,
@@ -18,25 +17,18 @@ function normalize(v: Vector): Vector {
 }
 
 
-function handleGravity(b1: Ball, b2: Ball, FPS: number, GC: number): void {
-    /*
+async function handleGravity(b1: Ball, b2: Ball, FPS: number, GC: number): Promise<void> {
+    const Fg: number = await Promise.resolve((b1.getMass() * b2.getMass())
+                        / distanceSquared(b1.getPosition(), b2.getPosition()));
 
-    F = ma
-    F = m (delta v) / t
-    F * t = = m * delta v
-    delta v = F * t / m
+    const normalizedDirection: Vector = await Promise.resolve(
+        normalize(subtract(b2.getPosition(), b1.getPosition())),
+    );
 
-    Fg = G * M1* M2 / R^2
-        where G = the universal gravitation constant
-    */
-
-    const Fg: number = (b1.getMass() * b2.getMass())
-                        / distanceSquared(b1.getPosition(), b2.getPosition());
-
-    const normalizedDirection: Vector = normalize(subtract(b2.getPosition(), b1.getPosition()));
-
-    b1.accelerate(multiply(((GC * Fg) / b1.getMass()) / FPS, normalizedDirection));
-    b2.accelerate(multiply(((GC * -Fg) / b2.getMass()) / FPS, normalizedDirection));
+    return new Promise(() => {
+        b1.accelerate(multiply(((GC * Fg) / b1.getMass()) / FPS, normalizedDirection));
+        b2.accelerate(multiply(((GC * -Fg) / b2.getMass()) / FPS, normalizedDirection));
+    });
 }
 
 
@@ -65,17 +57,19 @@ async function handleWallCollisions(b: Ball, w: number, h: number): Promise<void
     const r: number = b.getRadius();
 
     if (pos.x + r >= w || pos.x - r <= 0) {
-        determineMTVHorizontal(b, w).then((mtv) => new Promise(() => {
+        determineMTVHorizontal(b, w).then((mtv) => new Promise<void>(() => {
             b.move({ x: mtv, y: 0 });
             b.setVelocity({ x: -b.getVelocity().x, y: b.getVelocity().y });
         }));
     }
-    if (pos.y + r > h || pos.y - r < 0) {
-        determineMTVVertical(b, h).then((mtv) => new Promise(() => {
+    else if (pos.y + r > h || pos.y - r < 0) {
+        determineMTVVertical(b, h).then((mtv) => new Promise<void>(() => {
             b.move({ x: 0, y: mtv });
             b.setVelocity({ x: b.getVelocity().x, y: -b.getVelocity().y });
         }));
     }
+
+    return Promise.resolve();
 }
 
 async function determineMTV2D(b1: Ball, b2: Ball): Promise<Vector> {
