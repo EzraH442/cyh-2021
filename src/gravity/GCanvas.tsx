@@ -4,20 +4,19 @@ import TempBall from "./TempBall";
 import { handleBallCollisions, handleGravity, handleWallCollisions } from "./physics";
 
 import Vector from "../graphics/Vector";
-import Color from "../graphics/Color";
+import { Colors } from "../graphics/Color";
 
 type GProps = {
     width: number,
     height: number
-    FPS: number,
-    fillColor: Color,
     constants: {
         GC: number,
         E_LOSS_COLLISION: number,
-        MAX_RADIUS: number,
     }
     isPaused: boolean,
+    isPhysicsPaused: boolean
     isResetting: boolean // really just a signal, the boolean value switching is what triggers reset
+    trailLength: number
 };
 
 
@@ -34,6 +33,15 @@ type GState = {
 };
 
 const MOUSE_LEFT = 0;
+const FILL_COLOR = Colors.Black;
+const FPS = 100;
+
+function getMousePos(e: globalThis.MouseEvent): Vector {
+    return {
+        x: e.offsetX,
+        y: e.offsetY,
+    };
+}
 
 class GCanvas extends React.Component<GProps, GState> {
     constructor(props: GProps) {
@@ -55,43 +63,47 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     componentDidMount(): void {
-        const { FPS } = this.props;
+        this.restart();
 
-        this.restartWithFPS(FPS);
+        this.canvasRef.current?.addEventListener("mousedown", this.clickDownHandler);
+        this.canvasRef.current?.addEventListener("mouseup", this.clickUpHandler);
+        this.canvasRef.current?.addEventListener("keydown", this.keyDownHandler);
+        this.canvasRef.current?.addEventListener("keyup", this.keyUpHandler);
+        this.canvasRef.current?.addEventListener("mousemove", this.mouseMoveHandler);
 
-        window.addEventListener("mousedown", this.clickDownHandler);
-        window.addEventListener("mouseup", this.clickUpHandler);
-        window.addEventListener("keydown", this.keyDownHandler);
-        window.addEventListener("keyup", this.keyUpHandler);
-        window.addEventListener("wheel", this.mouseScrollHandler);
-        window.addEventListener("mousemove", this.mouseMoveHandler);
+        globalThis.addEventListener("keydown", (e: globalThis.KeyboardEvent) => {
+            if (e.code === "ArrowUp" || e.code === "ArrowDown") e.preventDefault(); // disable arrow key scrolling behaviour
+        });
+
         this.render();
     }
 
     componentDidUpdate(prevProps: GProps): void {
-        const { FPS, isPaused, isResetting } = this.props;
+        const { isPaused, isResetting, trailLength } = this.props;
+        const { balls } = this.state;
 
         if (prevProps.isPaused === true && isPaused === false) {
-            this.restartWithFPS(FPS);
+            this.restart();
         }
         else if (prevProps.isPaused === false && isPaused === true) {
             this.stop();
         }
-        else if (prevProps.FPS !== FPS) {
-            this.restartWithFPS(FPS);
-        }
         else if (prevProps.isResetting !== isResetting) this.resetData();
+        else if (prevProps.trailLength !== trailLength) {
+            for (let i = 0; i < balls.length; i++) {
+                balls[i].setTrailLifetime((trailLength * 100000) / FPS);
+            }
+        }
     }
 
     componentWillUnmount(): void {
         this.stop();
 
-        window.removeEventListener("mousedown", this.clickDownHandler);
-        window.removeEventListener("mouseup", this.clickUpHandler);
-        window.removeEventListener("keydown", this.keyDownHandler);
-        window.removeEventListener("keyup", this.keyUpHandler);
-        window.removeEventListener("wheel", this.mouseScrollHandler);
-        window.removeEventListener("mousemove", this.mouseMoveHandler);
+        this.canvasRef.current?.removeEventListener("mousedown", this.clickDownHandler);
+        this.canvasRef.current?.removeEventListener("mouseup", this.clickUpHandler);
+        this.canvasRef.current?.removeEventListener("keydown", this.keyDownHandler);
+        this.canvasRef.current?.removeEventListener("keyup", this.keyUpHandler);
+        this.canvasRef.current?.removeEventListener("mousemove", this.mouseMoveHandler);
     }
 
     // Utility Methods
@@ -123,9 +135,9 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     clearScreen = (ctx: CanvasRenderingContext2D): void => {
-        const { width, height, fillColor } = this.props;
+        const { width, height } = this.props;
 
-        ctx.fillStyle = fillColor.hexCode;
+        ctx.fillStyle = FILL_COLOR.hexCode;
         ctx.fillRect(0, 0, width, height);
     }
 
@@ -140,7 +152,6 @@ class GCanvas extends React.Component<GProps, GState> {
 
     addTempDrawableToDrawables = async (): Promise<void> => {
         const { tempBall, balls, worldData } = this.state;
-        const { FPS } = this.props;
         if (tempBall === null) return;
 
         const newBall = tempBall.toBall(FPS);
@@ -159,10 +170,7 @@ class GCanvas extends React.Component<GProps, GState> {
         const { worldData, pressedKeys } = this.state;
 
         if (!worldData.isCreatingNewBall) {
-            const mousePos: Vector = {
-                x: e.clientX,
-                y: e.clientY,
-            };
+            const mousePos = getMousePos(e);
             this.addTempBall(mousePos);
         }
         else if (!pressedKeys.has("Shift")) {
@@ -194,26 +202,13 @@ class GCanvas extends React.Component<GProps, GState> {
         const { tempBall, worldData } = this.state;
 
         if (worldData.isCreatingNewBall) {
-            const mousePos: Vector = {
-                x: e.clientX,
-                y: e.clientY,
-            };
+            const mousePos = getMousePos(e);
             if (worldData.isMovingNewBall) {
                 tempBall?.setCirclePos(mousePos);
             }
             else if (worldData.isMovingEndpoint) {
                 tempBall?.setEndpointPos(mousePos);
             }
-        }
-    }
-
-    mouseScrollHandler = (e: globalThis.WheelEvent) => {
-        const { tempBall, worldData } = this.state;
-        const { constants } = this.props;
-
-        if (tempBall && worldData.isCreatingNewBall
-            && tempBall.getCirlceRadius() + e.deltaY / 50 < constants.MAX_RADIUS) {
-            tempBall.changeRadius(e.deltaY / 50);
         }
     }
 
@@ -227,7 +222,7 @@ class GCanvas extends React.Component<GProps, GState> {
 
     doBallGravityPhysics = async (): Promise<void[]> => {
         const { balls } = this.state;
-        const { constants, FPS } = this.props;
+        const { constants } = this.props;
 
         const promises: Promise<void>[] = [];
         for (let i = 0; i < balls.length; i++) {
@@ -256,41 +251,42 @@ class GCanvas extends React.Component<GProps, GState> {
             balls, tempBall, pressedKeys, worldData,
         } = this.state;
         const {
-            width, height, FPS, constants,
+            width, height, constants, isPhysicsPaused,
         } = this.props;
         Promise.resolve(this.clearScreen(ctx))
             .then(async () => {
-                Promise.resolve(this.doBallGravityPhysics());
+                if (!isPhysicsPaused) Promise.resolve(this.doBallGravityPhysics());
             })
             .then(async () => {
                 Promise.resolve(this.drawTrails(ctx));
             })
             .then(async () => {
-                for (let i = 0; i < balls.length; i++) {
-                    let foundCollision = false;
-                    const b1 = balls[i];
+                if (!isPhysicsPaused) {
+                    for (let i = 0; i < balls.length; i++) {
+                        let foundCollision = false;
+                        const b1 = balls[i];
 
-                    b1.move({ x: b1.getVelocity().x / FPS, y: b1.getVelocity().y / FPS });
-                    handleWallCollisions(b1, width, height, FPS)
-                        .then((didCollide) => {
-                            foundCollision = didCollide;
-                        });
-
-                    for (let j = i + 1; j < balls.length; j++) {
-                        const b2 = balls[j];
-                        let foundCollisionj = false;
-                        handleBallCollisions(b1, b2, constants.E_LOSS_COLLISION)
+                        b1.move({ x: b1.getVelocity().x / FPS, y: b1.getVelocity().y / FPS });
+                        handleWallCollisions(b1, width, height, FPS)
                             .then((didCollide) => {
-                                foundCollisionj = didCollide;
+                                foundCollision = didCollide;
                             });
 
-                        if (foundCollisionj) foundCollision = true;
-                    }
-                    if (!foundCollision) {
-                        b1.addTrailPoint(b1.getPosition());
+                        for (let j = i + 1; j < balls.length; j++) {
+                            const b2 = balls[j];
+                            let foundCollisionj = false;
+                            handleBallCollisions(b1, b2, constants.E_LOSS_COLLISION)
+                                .then((didCollide) => {
+                                    foundCollisionj = didCollide;
+                                });
+
+                            if (foundCollisionj) foundCollision = true;
+                        }
+                        if (!foundCollision) {
+                            b1.addTrailPoint(b1.getPosition());
+                        }
                     }
                 }
-
                 for (let i = 0; i < balls.length; i++) {
                     const b = balls[i];
                     b.drawCircle(ctx);
@@ -300,10 +296,17 @@ class GCanvas extends React.Component<GProps, GState> {
                     tempBall.draw(ctx);
                 }
 
-                if (pressedKeys.has("Enter") && worldData.isCreatingNewBall) {
-                    await Promise.resolve(this.addTempDrawableToDrawables());
+                if (worldData.isCreatingNewBall) {
+                    if (pressedKeys.has("Enter")) {
+                        await Promise.resolve(this.addTempDrawableToDrawables());
+                    }
+                    if (pressedKeys.has("ArrowUp")) {
+                        await Promise.resolve(tempBall?.changeRadius(1));
+                    }
+                    if (pressedKeys.has("ArrowDown")) {
+                        await Promise.resolve(tempBall?.changeRadius(-1));
+                    }
                 }
-
                 this.intervalID = window.setTimeout(() => this.update(ctx), 1000 / FPS);
             });
     };
@@ -315,20 +318,13 @@ class GCanvas extends React.Component<GProps, GState> {
         }
     }
 
-    restartWithFPS = (FPS: number): void => {
+    restart = (): void => {
         const canvas = this.canvasRef.current;
         const context = canvas?.getContext("2d");
 
         this.intervalID = (context)
             ? window.setTimeout((() => this.update(context)), (1000 / FPS)) as unknown as number
             : null;
-
-        const { balls } = this.state;
-
-        for (let i = 0; i < balls.length; i++) {
-            balls[i].setTrailLifetime(FPS);
-        }
-        // eslint-disable-next-line react/no-did-update-set-state
     }
 
     canvasRef;

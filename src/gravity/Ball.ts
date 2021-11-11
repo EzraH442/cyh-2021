@@ -24,6 +24,7 @@ class Ball extends Circle {
     public addTrailPoint(point: Vector): void {
         if (this.trail.vertices.length > this.trailLifetime) {
             this.trail.vertices.shift();
+            this.trail.vertices.shift();
         }
         this.trail.vertices.push(point);
     }
@@ -37,8 +38,8 @@ class Ball extends Circle {
         this.trail.setLineColor(color);
     }
 
-    public setTrailLifetime(trailLifetime: number): void {
-        this.trailLifetime = trailLifetime;
+    public setTrailLifetime(lifetime: number): void {
+        this.trailLifetime = lifetime;
     }
 
     public getVelocity(): Vector {

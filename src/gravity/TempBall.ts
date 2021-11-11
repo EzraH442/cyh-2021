@@ -5,6 +5,10 @@ import Line from "../graphics/Line";
 import Vector, { subtract as Vsubtract } from "../graphics/Vector";
 import Ball from "./Ball";
 
+const MAX_RADIUS = 50;
+const MIN_RADIUS = 5;
+
+
 class TempBall extends Drawable {
     constructor(pos: Vector, radius: number) {
         super();
@@ -32,7 +36,8 @@ class TempBall extends Drawable {
     }
 
     public changeRadius(deltaR: number): void {
-        if (deltaR + this.circle.getRadius() >= 0) {
+        if (deltaR + this.circle.getRadius() >= MIN_RADIUS
+        && deltaR + this.circle.getRadius() <= MAX_RADIUS) {
             this.circle.setRadius(this.circle.getRadius() + deltaR);
         }
     }

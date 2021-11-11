@@ -1,9 +1,7 @@
 import Ball from "./Ball";
 import Vector, {
-    add, subtract, multiply, divide, dotProduct,
+    subtract, multiply, divide, dotProduct,
 } from "../graphics/Vector";
-
-const SPEED_LIMIT = 10000000;
 
 function distanceSquared(v1: Vector, v2: Vector): number {
     return (v2.x - v1.x) ** 2 + (v2.y - v1.y) ** 2;
@@ -18,15 +16,6 @@ function normalize(v: Vector): Vector {
     return divide(mag, v);
 }
 
-function calcMaxVelocityUnderSpeedLimit(b: Ball, deltaV: Vector): Vector {
-    const newV = add(b.getVelocity(), deltaV);
-    const magSquared = magnitudeSquared(newV);
-
-    if (magSquared < SPEED_LIMIT ** 2) return newV;
-
-    const scalar = SPEED_LIMIT / Math.sqrt(magSquared); // gets the amount its over the speed limit
-    return multiply(scalar, newV);
-}
 
 async function handleGravity(b1: Ball, b2: Ball, FPS: number, GC: number): Promise<void> {
     const Fg: number = await Promise.resolve((b1.getMass() * b2.getMass())
@@ -41,8 +30,8 @@ async function handleGravity(b1: Ball, b2: Ball, FPS: number, GC: number): Promi
         multiply(((GC * -Fg) / b2.getMass()) / FPS, normalizedDirection)])
         .then(([deltaV1, deltaV2]) => {
             Promise.all([
-                b1.setVelocity(calcMaxVelocityUnderSpeedLimit(b1, deltaV1)),
-                b2.setVelocity(calcMaxVelocityUnderSpeedLimit(b2, deltaV2))]);
+                b1.accelerate(deltaV1),
+                b2.accelerate(deltaV2)]);
         })
         .then();
 }
@@ -148,8 +137,8 @@ async function handleBallCollisions(
 
         const dot1 = dotProduct(rv1, rp1);
         const dot2 = dotProduct(rv2, rp2);
-        const dv1 = multiply(1 - E_LOSS, subtract(v1, multiply((im11 * dot1) / dist, rp1)));
-        const dv2 = multiply(1 - E_LOSS, subtract(v2, multiply((im22 * dot2) / dist, rp2)));
+        const dv1 = multiply(-1 * (1 - E_LOSS), multiply((im11 * dot1) / dist, rp1));
+        const dv2 = multiply(-1 * (1 - E_LOSS), multiply((im22 * dot2) / dist, rp2));
 
         const [deltaPos1, deltaPos2] = await Promise.all([
             multiply((im1 / (im1 + im2)) * 1.000000001, mtv),
@@ -159,8 +148,8 @@ async function handleBallCollisions(
         b2.move(deltaPos2);
 
         Promise.all([
-            b1.setVelocity(dv1),
-            b2.setVelocity(dv2)])
+            b1.accelerate(dv1),
+            b2.accelerate(dv2)])
             .then(() => true);
     }
     return Promise.resolve(false);
