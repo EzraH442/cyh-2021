@@ -4,10 +4,10 @@ import Slider, { SliderProps } from "rc-slider";
 import "rc-slider/assets/index.css";
 
 const SilderContainer = styled.div`
+    padding: 10px;
 `;
 
 const SliderLabel = styled.p`
-    display: inline-block;
     font-family: "Raleway";
 `;
 
@@ -34,7 +34,6 @@ const GSlider: React.FC<SliderProps & GSliderProps> = ({ label, ...props }) => (
                 marginTop: -3,
                 backgroundColor: "#96005a",
             }}
-
         />
     </SilderContainer>
 );

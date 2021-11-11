@@ -1,4 +1,6 @@
 import React from "react";
+import styled from "styled-components";
+
 import Ball from "./Ball";
 import TempBall from "./TempBall";
 import { handleBallCollisions, handleGravity, handleWallCollisions } from "./physics";
@@ -35,6 +37,13 @@ type GState = {
 const MOUSE_LEFT = 0;
 const FILL_COLOR = Colors.Black;
 const FPS = 100;
+
+const StyledCanvas = styled.canvas<{width: number, height: number}>`
+    border: 1px solid white;
+    margin: 10px;
+    width: ${(props) => `${props.width - 22}px`};
+    height: ${(props) => `${props.height - 22}px`}
+`;
 
 function getMousePos(e: globalThis.MouseEvent): Vector {
     return {
@@ -335,7 +344,7 @@ class GCanvas extends React.Component<GProps, GState> {
         const { width, height } = this.props;
 
         return (
-            <canvas
+            <StyledCanvas
                 ref={this.canvasRef}
                 tabIndex={0}
                 width={width}

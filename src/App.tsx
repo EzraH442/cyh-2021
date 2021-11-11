@@ -8,16 +8,22 @@ import useWindowDimensions from "./useWidowDimensions";
 
 import GCanvas from "./gravity/GCanvas";
 
-const InputBox = styled.div`
+const InputBox = styled.div<{width: number, height: number}>`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
     background-color: black;
     padding: 10px 20px;
     margin: 5px;
     border: 1px dashed cyan;
     color: white;
+    max-width: ${(props) => `${props.width - 52}px`};
+    height: ${(props) => `${props.height - 32}px`};
 `;
 
 const Wrapper = styled.div`
     background-color: black;
+    display: flex;
 `;
 
 
@@ -38,7 +44,7 @@ const App: React.FC<AppProps> = () => {
     return (
         <Wrapper>
             <GCanvas
-                width={width}
+                width={width * 0.8}
                 height={height}
                 constants={{
                     GC: currentGravity,
@@ -49,9 +55,19 @@ const App: React.FC<AppProps> = () => {
                 isResetting={isResetting}
                 trailLength={trailLength}
             />
-            <InputBox>
+            <InputBox
+                height={height}
+                width={width * 0.2}
+            >
+                <StyledButton
+                    type="button"
+                    onClick={handleButtonPress}
+                >
+                    Reset
+
+                </StyledButton>
                 <CheckboxInput
-                    label="Click To Pause"
+                    label="Paused"
                     type="checkbox"
                     defaultChecked={isPhysicsPaused}
                     onChange={() => setisPhysicsPaused(!isPhysicsPaused)}
@@ -59,7 +75,7 @@ const App: React.FC<AppProps> = () => {
                 <GSlider
                     label="Gravity"
                     min={0}
-                    max={100}
+                    max={50}
                     defaultValue={10}
                     onChange={setCurrentGravity}
                 />
@@ -79,7 +95,6 @@ const App: React.FC<AppProps> = () => {
                     defaultValue={1}
                     onChange={setTrailLength}
                 />
-                <StyledButton type="button" onClick={handleButtonPress}>Reset</StyledButton>
             </InputBox>
         </Wrapper>
     );
