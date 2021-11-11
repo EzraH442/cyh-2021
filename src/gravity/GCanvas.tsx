@@ -3,7 +3,7 @@ import Ball from "./Ball";
 import TempBall from "./TempBall";
 import { handleBallCollisions, handleGravity, handleWallCollisions } from "./physics";
 
-import Vector, { divide as Vdivide } from "../graphics/Vector";
+import Vector from "../graphics/Vector";
 import Color from "../graphics/Color";
 
 type GProps = {
@@ -17,13 +17,13 @@ type GProps = {
         MAX_RADIUS: number,
     }
     isPaused: boolean,
+    isResetting: boolean // really just a signal, the boolean value switching is what triggers reset
 };
 
 
 type GState = {
     balls: Ball[],
     tempBall: TempBall | null,
-    intervalID: number | null,
     worldData: {
         isCreatingNewBall: boolean
         isMovingNewBall: boolean,
@@ -42,7 +42,6 @@ class GCanvas extends React.Component<GProps, GState> {
         this.state = {
             balls: [],
             tempBall: null,
-            intervalID: null,
             worldData: {
                 isCreatingNewBall: false,
                 isMovingNewBall: false,
@@ -52,6 +51,7 @@ class GCanvas extends React.Component<GProps, GState> {
             pressedKeys: new Set(),
         };
         this.canvasRef = React.createRef<HTMLCanvasElement>();
+        this.intervalID = null;
     }
 
     componentDidMount(): void {
@@ -69,7 +69,7 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     componentDidUpdate(prevProps: GProps): void {
-        const { FPS, isPaused } = this.props;
+        const { FPS, isPaused, isResetting } = this.props;
 
         if (prevProps.isPaused === true && isPaused === false) {
             this.restartWithFPS(FPS);
@@ -80,14 +80,11 @@ class GCanvas extends React.Component<GProps, GState> {
         else if (prevProps.FPS !== FPS) {
             this.restartWithFPS(FPS);
         }
+        else if (prevProps.isResetting !== isResetting) this.resetData();
     }
 
     componentWillUnmount(): void {
-        const { intervalID } = this.state;
-
-        if (intervalID) clearInterval(intervalID);
-
-        this.setState({ intervalID: null });
+        this.stop();
 
         window.removeEventListener("mousedown", this.clickDownHandler);
         window.removeEventListener("mouseup", this.clickUpHandler);
@@ -99,7 +96,21 @@ class GCanvas extends React.Component<GProps, GState> {
 
     // Utility Methods
 
-    setKeyPress = (key: string): void => {
+    resetData = (): void => {
+        this.setState({
+            balls: [],
+            tempBall: null,
+            worldData: {
+                isCreatingNewBall: false,
+                isMovingNewBall: false,
+                isMovingEndpoint: false,
+                previousBallRadius: 10,
+            },
+            pressedKeys: new Set(),
+        });
+    }
+
+    putKeyPress = (key: string): void => {
         const { pressedKeys } = this.state;
         pressedKeys.add(key);
         this.setState({ pressedKeys });
@@ -127,7 +138,7 @@ class GCanvas extends React.Component<GProps, GState> {
         this.setState({ tempBall, worldData });
     }
 
-    addTempDrawableToDrawables = () => {
+    addTempDrawableToDrawables = async (): Promise<void> => {
         const { tempBall, balls, worldData } = this.state;
         const { FPS } = this.props;
         if (tempBall === null) return;
@@ -207,78 +218,110 @@ class GCanvas extends React.Component<GProps, GState> {
     }
 
     keyDownHandler = (e: globalThis.KeyboardEvent) => {
-        this.setKeyPress(e.key);
+        this.putKeyPress(e.key);
     }
 
     keyUpHandler = (e: globalThis.KeyboardEvent) => {
         this.removeKeyPress(e.key);
     }
 
-    update = async (ctx: CanvasRenderingContext2D) => {
-        this.clearScreen(ctx);
+    doBallGravityPhysics = async (): Promise<void[]> => {
+        const { balls } = this.state;
+        const { constants, FPS } = this.props;
 
+        const promises: Promise<void>[] = [];
+        for (let i = 0; i < balls.length; i++) {
+            for (let j = i + 1; j < balls.length; j++) {
+                promises.push(handleGravity(balls[i], balls[j], FPS, constants.GC));
+            }
+        }
+
+        return Promise.all(promises);
+    }
+
+    drawTrails = async (ctx: CanvasRenderingContext2D): Promise<void[]> => {
+        const { balls } = this.state;
+
+        const promises: Promise<void>[] = [];
+        for (let i = 0; i < balls.length; i++) {
+            balls[i].addTrailPoint(balls[i].getPosition());
+            promises.push(balls[i].drawTrail(ctx));
+        }
+
+        return Promise.all(promises);
+    }
+
+    update = async (ctx: CanvasRenderingContext2D) => {
         const {
             balls, tempBall, pressedKeys, worldData,
         } = this.state;
         const {
             width, height, FPS, constants,
         } = this.props;
-        let b1: Ball;
-        let b2: Ball;
+        Promise.resolve(this.clearScreen(ctx))
+            .then(async () => {
+                Promise.resolve(this.doBallGravityPhysics());
+            })
+            .then(async () => {
+                Promise.resolve(this.drawTrails(ctx));
+            })
+            .then(async () => {
+                for (let i = 0; i < balls.length; i++) {
+                    let foundCollision = false;
+                    const b1 = balls[i];
 
-        const physicsEvents: Promise<void>[] = [];
-        const drawBallEvents: Promise<void>[] = [];
-        const drawTrailEvents: Promise<void>[] = [];
+                    b1.move({ x: b1.getVelocity().x / FPS, y: b1.getVelocity().y / FPS });
+                    handleWallCollisions(b1, width, height, FPS)
+                        .then((didCollide) => {
+                            foundCollision = didCollide;
+                        });
 
-        for (let i = 0; i < balls.length; i++) {
-            b1 = balls[i];
-            b1.move(Vdivide(FPS, b1.getVelocity()));
+                    for (let j = i + 1; j < balls.length; j++) {
+                        const b2 = balls[j];
+                        let foundCollisionj = false;
+                        handleBallCollisions(b1, b2, constants.E_LOSS_COLLISION)
+                            .then((didCollide) => {
+                                foundCollisionj = didCollide;
+                            });
 
-            physicsEvents.push(handleWallCollisions(b1, width, height));
+                        if (foundCollisionj) foundCollision = true;
+                    }
+                    if (!foundCollision) {
+                        b1.addTrailPoint(b1.getPosition());
+                    }
+                }
 
-            for (let j = i + 1; j < balls.length; j++) {
-                b2 = balls[j];
-                physicsEvents.push(handleGravity(b1, b2, FPS, constants.GC));
-                physicsEvents.push(handleBallCollisions(b1, b2, FPS));
-            }
+                for (let i = 0; i < balls.length; i++) {
+                    const b = balls[i];
+                    b.drawCircle(ctx);
+                }
 
-            const [drawBallPromise, drawTailPromise] = b1.getDrawPromises(ctx);
-            drawBallEvents.push(drawBallPromise);
-            drawTrailEvents.push(drawTailPromise);
-        }
+                if (tempBall && worldData.isCreatingNewBall) {
+                    tempBall.draw(ctx);
+                }
 
+                if (pressedKeys.has("Enter") && worldData.isCreatingNewBall) {
+                    await Promise.resolve(this.addTempDrawableToDrawables());
+                }
 
-        if (tempBall && worldData.isCreatingNewBall) {
-            drawBallEvents.push(tempBall.draw(ctx));
-        }
-
-        if (pressedKeys.has("Enter") && worldData.isCreatingNewBall) {
-            this.addTempDrawableToDrawables();
-        }
-
-        Promise.all(physicsEvents).then(() => {
-            Promise.all(drawTrailEvents);
-        }).then(() => {
-            Promise.all(drawBallEvents);
-        });
+                this.intervalID = window.setTimeout(() => this.update(ctx), 1000 / FPS);
+            });
     };
 
     stop = (): void => {
-        const { intervalID } = this.state;
-
-        if (intervalID) clearInterval(intervalID);
-
-        this.setState({ intervalID: null });
+        if (this.intervalID !== null) {
+            clearInterval(this.intervalID);
+            this.intervalID = null;
+        }
     }
 
     restartWithFPS = (FPS: number): void => {
         const canvas = this.canvasRef.current;
         const context = canvas?.getContext("2d");
 
-        const intervalID = (context)
-            ? window.setInterval((() => this.update(context)), 1000 / FPS) as unknown as number
+        this.intervalID = (context)
+            ? window.setTimeout((() => this.update(context)), (1000 / FPS)) as unknown as number
             : null;
-
 
         const { balls } = this.state;
 
@@ -286,10 +329,11 @@ class GCanvas extends React.Component<GProps, GState> {
             balls[i].setTrailLifetime(FPS);
         }
         // eslint-disable-next-line react/no-did-update-set-state
-        this.setState({ intervalID });
     }
 
     canvasRef;
+
+    intervalID: number | null;
 
     render(): JSX.Element {
         const { width, height } = this.props;

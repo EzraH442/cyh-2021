@@ -13,6 +13,7 @@ class TempBall extends Drawable {
         this.circle.setPosition(pos);
         this.tempLine = new Line(2);
         this.tempLine.setLineThickness(1);
+        this.tempLine.setLineCap("round");
         this.tempLine.vertices[0] = pos;
         this.tempLine.vertices[1] = pos;
     }
