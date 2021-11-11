@@ -1,1 +1,6 @@
 @import-normalize;
+
+@font-face {
+    font-family: 'Raleway';
+    src: local('Raleway'), url(./fonts/Raleway-ExtraLight.ttf) format("truetype");
+}

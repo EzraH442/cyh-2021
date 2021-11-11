@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 
 import GSlider from "./inputs/Slider";
+import CheckboxInput from "./inputs/Checkbox";
+import StyledButton from "./inputs/Button";
 import useWindowDimensions from "./useWidowDimensions";
 
 import GCanvas from "./gravity/GCanvas";
@@ -18,18 +20,6 @@ const Wrapper = styled.div`
     background-color: black;
 `;
 
-const StyledCheckbox = styled.input`
-    display: inline-block;
-`;
-
-const StyledCheckboxText = styled.p`
-    display: inline-block;
-    padding: 0 10px;
-`;
-
-const GTextBox = styled.div`
-    
-`;
 
 type AppProps = Record<string, never>
 
@@ -60,21 +50,21 @@ const App: React.FC<AppProps> = () => {
                 trailLength={trailLength}
             />
             <InputBox>
-                <div>
-                    <StyledCheckboxText>Click to Pause</StyledCheckboxText>
-                    <StyledCheckbox
-                        type="checkbox"
-                        defaultChecked={isPhysicsPaused}
-                        onChange={() => setisPhysicsPaused(!isPhysicsPaused)}
-                    />
-                </div>
+                <CheckboxInput
+                    label="Click To Pause"
+                    type="checkbox"
+                    defaultChecked={isPhysicsPaused}
+                    onChange={() => setisPhysicsPaused(!isPhysicsPaused)}
+                />
                 <GSlider
+                    label="Gravity"
                     min={0}
                     max={100}
                     defaultValue={10}
                     onChange={setCurrentGravity}
                 />
                 <GSlider
+                    label="Collision Energy Loss"
                     min={0}
                     max={1}
                     step={0.1}
@@ -82,13 +72,14 @@ const App: React.FC<AppProps> = () => {
                     onChange={setEnergyLoss}
                 />
                 <GSlider
+                    label="Trail Length"
                     min={0}
                     max={2}
                     step={0.02}
                     defaultValue={1}
                     onChange={setTrailLength}
                 />
-                <button type="button" onClick={handleButtonPress}>Reset</button>
+                <StyledButton type="button" onClick={handleButtonPress}>Reset</StyledButton>
             </InputBox>
         </Wrapper>
     );
