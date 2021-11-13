@@ -47,8 +47,8 @@ const StyledCanvas = styled.canvas<{width: number, height: number}>`
 
 function getMousePos(e: globalThis.MouseEvent): Vector {
     return {
-        x: e.offsetX,
-        y: e.offsetY,
+        x: e.offsetX + 10,
+        y: e.offsetY + 10,
     };
 }
 
