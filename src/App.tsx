@@ -32,7 +32,6 @@ type AppProps = Record<string, never>
 
 const App: React.FC<AppProps> = () => {
     const [currentGravity, setCurrentGravity] = useState(25);
-    const [energyLoss, setEnergyLoss] = useState(0.15);
     const [trailLength, setTrailLength] = useState(1);
     const [isPhysicsPaused, setisPhysicsPaused] = useState(false);
     const [isResetting, setIsReseting] = useState(false);
@@ -49,7 +48,6 @@ const App: React.FC<AppProps> = () => {
                 height={height}
                 constants={{
                     GC: currentGravity,
-                    E_LOSS_COLLISION: energyLoss,
                 }}
                 isPhysicsPaused={isPhysicsPaused}
                 isPaused={false}
@@ -79,14 +77,6 @@ const App: React.FC<AppProps> = () => {
                     max={30}
                     defaultValue={10}
                     onChange={setCurrentGravity}
-                />
-                <GSlider
-                    label="Collision Energy Loss"
-                    min={0}
-                    max={1}
-                    step={0.1}
-                    defaultValue={0.15}
-                    onChange={setEnergyLoss}
                 />
                 <GSlider
                     label="Trail Length"

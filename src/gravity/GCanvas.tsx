@@ -13,7 +13,6 @@ type GProps = {
     height: number
     constants: {
         GC: number,
-        E_LOSS_COLLISION: number,
     }
     isPaused: boolean,
     isPhysicsPaused: boolean
@@ -159,7 +158,7 @@ class GCanvas extends React.Component<GProps, GState> {
         this.setState({ tempBall, worldData });
     }
 
-    addTempDrawableToDrawables = async (): Promise<void> => {
+    addTempDrawableToDrawables = (): void => {
         const { tempBall, balls, worldData } = this.state;
         if (tempBall === null) return;
 
@@ -260,13 +259,15 @@ class GCanvas extends React.Component<GProps, GState> {
             balls, tempBall, pressedKeys, worldData,
         } = this.state;
         const {
-            width, height, constants, isPhysicsPaused,
+            width, height, isPhysicsPaused,
         } = this.props;
+
         Promise.resolve(this.clearScreen(ctx))
-            .then(async () => {
-                if (!isPhysicsPaused) Promise.resolve(this.doBallGravityPhysics());
+            .then(() => {
+                if (!isPhysicsPaused) return this.doBallGravityPhysics();
+                return Promise.resolve([]);
             })
-            .then(async () => {
+            .then(() => {
                 Promise.resolve(this.drawTrails(ctx));
             })
             .then(async () => {
@@ -284,7 +285,7 @@ class GCanvas extends React.Component<GProps, GState> {
                         for (let j = i + 1; j < balls.length; j++) {
                             const b2 = balls[j];
                             let foundCollisionj = false;
-                            handleBallCollisions(b1, b2, constants.E_LOSS_COLLISION)
+                            handleBallCollisions(b1, b2)
                                 .then((didCollide) => {
                                     foundCollisionj = didCollide;
                                 });
@@ -301,20 +302,12 @@ class GCanvas extends React.Component<GProps, GState> {
                     b.drawCircle(ctx);
                 }
 
-                if (tempBall && worldData.isCreatingNewBall) {
-                    tempBall.draw(ctx);
-                }
+                if (tempBall && worldData.isCreatingNewBall) tempBall.draw(ctx);
 
                 if (worldData.isCreatingNewBall) {
-                    if (pressedKeys.has("Enter")) {
-                        await Promise.resolve(this.addTempDrawableToDrawables());
-                    }
-                    if (pressedKeys.has("ArrowUp")) {
-                        await Promise.resolve(tempBall?.changeRadius(1));
-                    }
-                    if (pressedKeys.has("ArrowDown")) {
-                        await Promise.resolve(tempBall?.changeRadius(-1));
-                    }
+                    if (pressedKeys.has("Enter")) this.addTempDrawableToDrawables();
+                    if (pressedKeys.has("ArrowUp")) tempBall?.changeRadius(1);
+                    if (pressedKeys.has("ArrowDown")) tempBall?.changeRadius(-1);
                 }
                 this.intervalID = window.setTimeout(() => this.update(ctx), 1000 / FPS);
             });
