@@ -7,6 +7,7 @@ import StyledButton from "./inputs/Button";
 import useWindowDimensions from "./useWidowDimensions";
 
 import GCanvas from "./gravity/GCanvas";
+import AudioPlayer from "./music/AudioPlayer";
 
 const InputBox = styled.div<{width: number, height: number}>`
     display: flex;
@@ -75,7 +76,7 @@ const App: React.FC<AppProps> = () => {
                 <GSlider
                     label="Gravity"
                     min={0}
-                    max={50}
+                    max={30}
                     defaultValue={10}
                     onChange={setCurrentGravity}
                 />
@@ -95,9 +96,9 @@ const App: React.FC<AppProps> = () => {
                     defaultValue={1}
                     onChange={setTrailLength}
                 />
+                <AudioPlayer />
             </InputBox>
         </Wrapper>
     );
 };
-
 export default App;
