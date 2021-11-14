@@ -1,38 +1,59 @@
 import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlayCircle, faPauseCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+    faPlayCircle, faPauseCircle, faStepForward, faStepBackward, faCaretDown,
+} from "@fortawesome/free-solid-svg-icons";
 
 import songs from "./songs";
-import useAudio from "./useAudio";
-
-import StyledButton from "../inputs/Button";
+import useAudio, { getNextIndexInLoop, getPreviousIndexInLoop } from "./useAudio";
 
 const Wrapper = styled.div`
+    border: 1px solid white;
+    padding: 10px;
+    text-align: center;
+`;
 
+const IconBar = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+`;
+
+const StyledIcon = styled(FontAwesomeIcon)`
+    color="#FF00FF"
 `;
 
 type AudioProps = Record<string, never>
 
 const AudioPlayer: React.FC<AudioProps> = () => {
-    const [playing, togglePlaying, playNext] = useAudio(songs);
+    const [playing, togglePlaying, songIndex, setSongIndex, song] = useAudio(songs);
 
     return (
         <Wrapper>
-            <FontAwesomeIcon
-                icon={(playing) ? faPlayCircle : faPauseCircle}
-                onClick={togglePlaying}
-                color="#FF00FF"
+            <IconBar>
+                <StyledIcon
+                    icon={faStepBackward}
+                    onClick={() => setSongIndex(getPreviousIndexInLoop(songIndex, songs.length))}
+                    size="2x"
+                />
+                <StyledIcon
+                    icon={(playing) ? faPlayCircle : faPauseCircle}
+                    onClick={togglePlaying}
+                    size="2x"
+                />
+                <StyledIcon
+                    icon={faStepForward}
+                    onClick={() => {
+                        setSongIndex(getNextIndexInLoop(songIndex, songs.length));
+                    }}
+                    size="2x"
+                />
+            </IconBar>
+            <StyledIcon
+                icon={faCaretDown}
+                size="2x"
             />
-            <StyledButton
-                type="button"
-                onClick={playNext}
-            >
-                Next Song
-            </StyledButton>
-            <p>
-                {(playing) ? "Playing" : "Paused"}
-            </p>
         </Wrapper>
     );
 };

@@ -2,14 +2,9 @@ import { Song } from "./Song";
 
 const songs: Song[] = [
     {
-        name: "Inspiring Chill",
-        artistName: "Sergey Gulevich",
-        url: "https://mp3l.jamendo.com/?trackid=1896478&format=mp31&from=0kLF3jnTWD0bZ8bKSPLq%2BQ%3D%3D%7CXM2PX%2BpRSlngVSNL8Rqlxw%3D%3D",
-    },
-    {
-        name: "Igor Pumphonia - Le Compromis (Dub)",
-        artistName: "Igor Pumphonia",
-        url: "https://mp3l.jamendo.com/?trackid=1894568&format=mp31&from=lHxpEv%2FQS6rAbHPfAdPmAg%3D%3D%7CJD9FsKW%2BU5%2Fc%2Baf6YYJRxg%3D%3D",
+        name: "Tree",
+        artistName: "unVoid",
+        url: "https://mp3l.jamendo.com/?trackid=1861221&format=mp31&from=WGKmzJeSRdnjdNWecwYSEw%3D%3D%7CEC0c0YXMIOibhwv2ylaKYw%3D%3D",
     },
     {
         name: "Lofi Hiphop Jazzy Trumpet",
@@ -27,29 +22,9 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1882761&format=mp31&from=SObVmJOdSzCWk%2BYBaUDY5w%3D%3D%7C90FV6ZUyuekv8h22IItncw%3D%3D",
     },
     {
-        name: "Kings Cross - A Summers Evening",
-        artistName: "Bemused",
-        url: "https://mp3l.jamendo.com/?trackid=1885476&format=mp31&from=hFaCUB91ddKhf%2B8SL3UaSw%3D%3D%7Cz7qYCdUI8ZB6ayuG5IYXCg%3D%3D",
-    },
-    {
         name: "Calm Lo Fi",
         artistName: "Mit-Rich",
         url: "https://mp3l.jamendo.com/?trackid=1877711&format=mp31&from=5nemzIT7XymaKcmrjERMpg%3D%3D%7C5glcjWfTN6b5cXYPsqvjpA%3D%3D",
-    },
-    {
-        name: "Release Your Stress",
-        artistName: "Ogi Feel the Beat",
-        url: "https://mp3l.jamendo.com/?trackid=1876226&format=mp31&from=AvPisYlgw3Adx5%2F7tRvybw%3D%3D%7CQzXnplAHg1GB2RSxvJiBGQ%3D%3D",
-    },
-    {
-        name: "Holiday",
-        artistName: "HRCRX",
-        url: "https://mp3l.jamendo.com/?trackid=1878568&format=mp31&from=NNY43gHanKf8s%2BuhCkpK4Q%3D%3D%7CFFNfPylw1CN0NVOxC%2FHWzg%3D%3D",
-    },
-    {
-        name: "Lo-fi hip-hop jazz Evening Meeting phonk beats relax music",
-        artistName: "SaturdayBeats",
-        url: "https://mp3l.jamendo.com/?trackid=1882301&format=mp31&from=I7CZZpp3U3z1rt2c7xOMeg%3D%3D%7C2Sr%2BKg45TsiTemkVZ4JnYA%3D%3D",
     },
     {
         name: "To Care",
@@ -87,11 +62,6 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1859520&format=mp31&from=IS4sQyoRgzzhrz58kSK9kQ%3D%3D%7CUk%2B3RqMx2ba5Z6esfQQ3xA%3D%3D",
     },
     {
-        name: "Background Music Lofi Hip Hop Beat Chill Lofi Chill jazz lofi type beat",
-        artistName: "PeryCreep",
-        url: "https://mp3l.jamendo.com/?trackid=1864300&format=mp31&from=xhj8ghWQvR1%2BYL92XDRbFg%3D%3D%7CkhRhX8PJkc9VdGu7FKPAOw%3D%3D",
-    },
-    {
         name: "Sunrise in Limbo - Lofi",
         artistName: "Pavle",
         url: "https://mp3l.jamendo.com/?trackid=1857780&format=mp31&from=JXv8C7rANJ2%2Fo4pZRLtdjA%3D%3D%7CH80LXRZoTP8q%2Fgx7Ay%2Bn0g%3D%3D",
@@ -110,11 +80,6 @@ const songs: Song[] = [
         name: "Beach Sunset",
         artistName: "Loufo",
         url: "https://mp3l.jamendo.com/?trackid=1858465&format=mp31&from=UOg8vvykHrugq5%2BBm%2FNk7Q%3D%3D%7CL6Q0e7Qphj1Byot6Jdj1cA%3D%3D",
-    },
-    {
-        name: "Tree",
-        artistName: "unVoid",
-        url: "https://mp3l.jamendo.com/?trackid=1861221&format=mp31&from=WGKmzJeSRdnjdNWecwYSEw%3D%3D%7CEC0c0YXMIOibhwv2ylaKYw%3D%3D",
     },
     {
         name: "Chill Lofi Type Beat W",

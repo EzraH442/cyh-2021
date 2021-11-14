@@ -1,25 +1,36 @@
 import { useState, useEffect } from "react";
 import { Song } from "./Song";
 
-const useAudio = (songs : Song[]): [boolean, () => void, () => void] => {
+function getNextIndexInLoop(current: number, length: number): number {
+    return (current + 1) % length;
+}
+
+function getPreviousIndexInLoop(current: number, length: number): number {
+    let nextIndex = current - 1;
+    if (nextIndex < 0) nextIndex += length;
+    return nextIndex;
+}
+
+const useAudio = (songs : Song[]): [
+    boolean, () => void,
+    number, (index: number) => void,
+    Song
+] => {
     const [audio] = useState(new Audio(songs[0].url));
     const [songIndex, setSongIndex] = useState(0);
     const [playing, setPlaying] = useState(false);
-
-    const playNext = () => {
-        const nextSongIndex = (songIndex + 1) % songs.length;
-        setSongIndex(nextSongIndex);
-    };
+    const [song, setSong] = useState(songs[0]);
 
     const togglePlaying = () => {
         setPlaying(!playing);
     };
 
     useEffect(() => {
+        setSong(songs[songIndex]);
         audio.pause();
         audio.src = songs[songIndex].url;
         audio.load();
-        audio.play();
+        audio.play().catch();
     }, [songIndex]);
 
     useEffect(() => {
@@ -33,14 +44,16 @@ const useAudio = (songs : Song[]): [boolean, () => void, () => void] => {
 
     useEffect(() => {
         audio.addEventListener("ended", () => {
-            playNext();
+            setSongIndex(getNextIndexInLoop(songIndex, songs.length));
         });
         return () => {
             audio.removeEventListener("ended", () => setPlaying(false));
         };
-    }, []);
+    }, [songIndex]);
 
-    return [playing, togglePlaying, playNext];
+    return [playing, togglePlaying, songIndex, setSongIndex, song];
 };
 
 export default useAudio;
+
+export { getNextIndexInLoop, getPreviousIndexInLoop };
