@@ -4,13 +4,13 @@ import Vector, { add as Vadd } from "../graphics/Vector";
 import Color from "../graphics/Color";
 
 class Ball extends Circle {
-    constructor(r: number, FPS: number) {
+    constructor(r: number, FPS: number, trailLength: number) {
         super(r);
         this.mass = (4 / 3) * r * r * r * Math.PI;
         this.trail = new Line();
         this.trail.setLineThickness(this.getRadius() / 3);
         this.trail.setLineCap("round");
-        this.trailLifetime = FPS;
+        this.trailLifetime = (trailLength * 100000) / FPS;
     }
 
     public drawTrail(ctx: CanvasRenderingContext2D): Promise<void> {

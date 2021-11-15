@@ -78,11 +78,6 @@ class GCanvas extends React.Component<GProps, GState> {
         this.canvasRef.current?.addEventListener("keydown", this.keyDownHandler);
         this.canvasRef.current?.addEventListener("keyup", this.keyUpHandler);
         this.canvasRef.current?.addEventListener("mousemove", this.mouseMoveHandler);
-
-        globalThis.addEventListener("keydown", (e: globalThis.KeyboardEvent) => {
-            if (e.code === "ArrowUp" || e.code === "ArrowDown") e.preventDefault(); // disable arrow key scrolling behaviour
-        });
-
         this.render();
     }
 
@@ -113,8 +108,6 @@ class GCanvas extends React.Component<GProps, GState> {
         this.canvasRef.current?.removeEventListener("keyup", this.keyUpHandler);
         this.canvasRef.current?.removeEventListener("mousemove", this.mouseMoveHandler);
     }
-
-    // Utility Methods
 
     resetData = (): void => {
         this.setState({
@@ -160,17 +153,16 @@ class GCanvas extends React.Component<GProps, GState> {
 
     addTempDrawableToDrawables = (): void => {
         const { tempBall, balls, worldData } = this.state;
+        const { trailLength } = this.props;
         if (tempBall === null) return;
 
-        const newBall = tempBall.toBall(FPS);
+        const newBall = tempBall.toBall(FPS, trailLength);
         balls.push(newBall);
 
         worldData.isCreatingNewBall = false;
 
         this.setState({ balls, tempBall: null, worldData });
     }
-
-    // Event Handling
 
     clickDownHandler = (e: globalThis.MouseEvent) => {
         if (e.button !== MOUSE_LEFT) return;
