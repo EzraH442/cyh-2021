@@ -12,11 +12,6 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1880756&format=mp31&from=9uy0Z76iHHUn7ulZhOK5RQ%3D%3D%7Cb%2FSMPSCxQp2S7a9J4vYWaw%3D%3D",
     },
     {
-        name: "Sensitive",
-        artistName: "Infraction",
-        url: "https://mp3l.jamendo.com/?trackid=1884781&format=mp31&from=1rJ1p2ApxUQW2IrUNc35FA%3D%3D%7C0y37LL3VaxcGM%2FZFR7Qo8Q%3D%3D",
-    },
-    {
         name: "No Rest Or Endless Rest",
         artistName: "Lisofv",
         url: "https://mp3l.jamendo.com/?trackid=1882761&format=mp31&from=SObVmJOdSzCWk%2BYBaUDY5w%3D%3D%7C90FV6ZUyuekv8h22IItncw%3D%3D",
@@ -27,34 +22,9 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1877711&format=mp31&from=5nemzIT7XymaKcmrjERMpg%3D%3D%7C5glcjWfTN6b5cXYPsqvjpA%3D%3D",
     },
     {
-        name: "To Care",
-        artistName: "Arto Kumanto",
-        url: "https://mp3l.jamendo.com/?trackid=1838679&format=mp31&from=3e5%2BtlDLxo7xspT8Y7Njkg%3D%3D%7CnaDL1yigk4fjo9vgO%2F6dqg%3D%3D",
-    },
-    {
-        name: "Babis (feat.Lusty Apricot)",
-        artistName: "Tab",
-        url: "https://mp3l.jamendo.com/?trackid=1772898&format=mp31&from=cpVtp7eSFJHZmnbN4fNO9Q%3D%3D%7CyVTVVo8eKgZzvqZ4zSCw1w%3D%3D",
-    },
-    {
         name: "Past Memories",
         artistName: "Tomas Gomez",
         url: "https://mp3l.jamendo.com/?trackid=1767808&format=mp31&from=Gsr0%2FnCnAVV%2BflQvUY0UqA%3D%3D%7CDbtVDvUXqr5m2%2Fjk03Xg3g%3D%3D",
-    },
-    {
-        name: "A Break in the Clouds",
-        artistName: "PNFA",
-        url: "https://mp3l.jamendo.com/?trackid=1739508&format=mp31&from=pZ5vD%2FMJEAxrQn7wpTVbfQ%3D%3D%7CIh7s9HL94gonUUzwloTXcA%3D%3D",
-    },
-    {
-        name: "Like Leaves In The Wind",
-        artistName: "Sevennotes",
-        url: "https://mp3l.jamendo.com/?trackid=1856949&format=mp31&from=odzSgSigCoCUbdsIqo3%2Fhg%3D%3D%7CHWCr2pJf5N5%2FpKks%2F%2FLsuw%3D%3D",
-    },
-    {
-        name: "Smoke",
-        artistName: "SoulProdMusic",
-        url: "https://mp3l.jamendo.com/?trackid=1858754&format=mp31&from=uU7ITmGzix8qo2dQ3JEyVw%3D%3D%7CvC%2B%2BNBv8A48k60CYKE1Ybw%3D%3D",
     },
     {
         name: "Lo-Fi Beat",
@@ -62,19 +32,9 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1859520&format=mp31&from=IS4sQyoRgzzhrz58kSK9kQ%3D%3D%7CUk%2B3RqMx2ba5Z6esfQQ3xA%3D%3D",
     },
     {
-        name: "Sunrise in Limbo - Lofi",
-        artistName: "Pavle",
-        url: "https://mp3l.jamendo.com/?trackid=1857780&format=mp31&from=JXv8C7rANJ2%2Fo4pZRLtdjA%3D%3D%7CH80LXRZoTP8q%2Fgx7Ay%2Bn0g%3D%3D",
-    },
-    {
         name: "Lofi t4",
         artistName: "Benedikt",
         url: "https://mp3l.jamendo.com/?trackid=1861967&format=mp31&from=ZwDP3Ss85L4Q%2Bw0fUK5MRA%3D%3D%7CGqtztX0MXggXFkRAcM814w%3D%3D",
-    },
-    {
-        name: "Mercurial",
-        artistName: "dreamføx",
-        url: "https://mp3l.jamendo.com/?trackid=1857401&format=mp31&from=25Db%2BA3Cp2ExX8HxgPoW8A%3D%3D%7Clc5IfWbaya3yIkc69aH4iw%3D%3D",
     },
     {
         name: "Beach Sunset",
@@ -82,24 +42,9 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1858465&format=mp31&from=UOg8vvykHrugq5%2BBm%2FNk7Q%3D%3D%7CL6Q0e7Qphj1Byot6Jdj1cA%3D%3D",
     },
     {
-        name: "Chill Lofi Type Beat W",
-        artistName: "Sergey Sh",
-        url: "https://mp3l.jamendo.com/?trackid=1861953&format=mp31&from=z%2BZatnrvUKO3kDSqNCph%2Fg%3D%3D%7CqMUabzRLg7ZzZAWjLKnGlg%3D%3D",
-    },
-    {
         name: "lofi hip hop trevel relax",
         artistName: "Sergei",
         url: "https://mp3l.jamendo.com/?trackid=1862128&format=mp31&from=qIzzpZZw0Rdwq7PD6Bni1g%3D%3D%7C21VOeNMAcP8bl7udGDJqzA%3D%3D",
-    },
-    {
-        name: "Neon Lights",
-        artistName: "OYStudio",
-        url: "https://mp3l.jamendo.com/?trackid=1848420&format=mp31&from=ZoZlPg7%2FltD77redC9oCjQ%3D%3D%7CcMBHbCMMqmqLB0UHiPFkmQ%3D%3D",
-    },
-    {
-        name: "Thursday",
-        artistName: "TheQLon",
-        url: "https://mp3l.jamendo.com/?trackid=1850569&format=mp31&from=ILuM19sooPtzqqmlL0eu8g%3D%3D%7CQD7myI0%2FBKBzSzmcfuRaxw%3D%3D",
     },
     {
         name: "On a rainy day",
@@ -107,54 +52,9 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1849752&format=mp31&from=2yxLkzTGk5b76kbgtk0FIA%3D%3D%7CIE3FxtqFBogen0Txj7FiPw%3D%3D",
     },
     {
-        name: "The Girl I Haven't Met",
-        artistName: "DreamHeaven",
-        url: "https://mp3l.jamendo.com/?trackid=1846870&format=mp31&from=oDyNXrYXOQGlEEZvviCDUQ%3D%3D%7Cw7wtmGUhaTxIN79oO21rPw%3D%3D",
-    },
-    {
-        name: "Igor Pumphonia - See My Life (Chill Version Dub)",
-        artistName: "Igor Pumphonia",
-        url: "https://mp3l.jamendo.com/?trackid=1830523&format=mp31&from=W%2FwJIGrkD2jyoSxq6GHxVA%3D%3D%7CLkzf0ZXIys5lr9UnEjjsBA%3D%3D",
-    },
-    {
-        name: "Sacred (feat. Jade Gritty)",
-        artistName: "Tab",
-        url: "https://mp3l.jamendo.com/?trackid=1834578&format=mp31&from=T22CijhMC4qZuSfXroFBtw%3D%3D%7CqFQaDuQcyQBp1h3M2a6org%3D%3D",
-    },
-    {
-        name: "Atmospheric Ambient Trip",
-        artistName: "Music For Show",
-        url: "https://mp3l.jamendo.com/?trackid=1830984&format=mp31&from=rXfH26wTq1KARRxjs79ZQQ%3D%3D%7CLiZxm36PGeQn1dILaBK5Xw%3D%3D",
-    },
-    {
-        name: "Plot",
-        artistName: "Numback",
-        url: "https://mp3l.jamendo.com/?trackid=1639399&format=mp31&from=WqDegGB47TFy2DuTFpJIJQ%3D%3D%7CDj5zBrwDy5XIzCEi%2BWQr5A%3D%3D",
-    },
-    {
-        name: "Future Chill",
-        artistName: "Silent Station",
-        url: "https://mp3l.jamendo.com/?trackid=1828674&format=mp31&from=X9ir8aZ1AaoTqQt0egZsCg%3D%3D%7CNMfwCOdZXhEmM%2BoN%2FIAqow%3D%3D",
-    },
-    {
-        name: "Lo-Fi ( Romantic &amp; Joyful )",
-        artistName: "RGbeatz",
-        url: "https://mp3l.jamendo.com/?trackid=1830969&format=mp31&from=E6dnmN3IgjQ6MDtgCsB2WQ%3D%3D%7CdLydRNfutzP%2BUbpm0BnWdw%3D%3D",
-    },
-    {
-        name: "Neo Souly Sax",
-        artistName: "MoodHarmonics",
-        url: "https://mp3l.jamendo.com/?trackid=1832194&format=mp31&from=LojBiCPNqw02GWdeF8Jjww%3D%3D%7CUj75zySLzbJnnFTn%2FOpivg%3D%3D",
-    },
-    {
         name: "Beautiful Lounge",
         artistName: "Sergey Gulevich",
         url: "https://mp3l.jamendo.com/?trackid=1833805&format=mp31&from=aD4XMG1wjAHL9ICgF%2B4oTA%3D%3D%7CAUHw04UM5Z5EVLV24DPsVA%3D%3D",
-    },
-    {
-        name: "Sparks",
-        artistName: "corviform",
-        url: "https://mp3l.jamendo.com/?trackid=1835093&format=mp31&from=Juz%2FCSe3uvTI3khBKEFs0w%3D%3D%7Cxqo07YjEeft0R44Uxw1r8A%3D%3D",
     },
     {
         name: "soul mood",
