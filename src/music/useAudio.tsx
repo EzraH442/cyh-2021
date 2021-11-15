@@ -26,11 +26,15 @@ const useAudio = (songs : Song[]): [
     };
 
     useEffect(() => {
+        const abortController = new AbortController();
         setSong(songs[songIndex]);
         audio.pause();
         audio.src = songs[songIndex].url;
         audio.load();
         audio.play().catch();
+        return () => {
+            abortController.abort();
+        };
     }, [songIndex]);
 
     useEffect(() => {
