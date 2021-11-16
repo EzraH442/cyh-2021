@@ -12,6 +12,11 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1880756&format=mp31&from=9uy0Z76iHHUn7ulZhOK5RQ%3D%3D%7Cb%2FSMPSCxQp2S7a9J4vYWaw%3D%3D",
     },
     {
+        name: "On a rainy day",
+        artistName: "Autonne",
+        url: "https://mp3l.jamendo.com/?trackid=1849752&format=mp31&from=2yxLkzTGk5b76kbgtk0FIA%3D%3D%7CIE3FxtqFBogen0Txj7FiPw%3D%3D",
+    },
+    {
         name: "No Rest Or Endless Rest",
         artistName: "Lisofv",
         url: "https://mp3l.jamendo.com/?trackid=1882761&format=mp31&from=SObVmJOdSzCWk%2BYBaUDY5w%3D%3D%7C90FV6ZUyuekv8h22IItncw%3D%3D",
@@ -47,11 +52,6 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1862128&format=mp31&from=qIzzpZZw0Rdwq7PD6Bni1g%3D%3D%7C21VOeNMAcP8bl7udGDJqzA%3D%3D",
     },
     {
-        name: "On a rainy day",
-        artistName: "Autonne",
-        url: "https://mp3l.jamendo.com/?trackid=1849752&format=mp31&from=2yxLkzTGk5b76kbgtk0FIA%3D%3D%7CIE3FxtqFBogen0Txj7FiPw%3D%3D",
-    },
-    {
         name: "Beautiful Lounge",
         artistName: "Sergey Gulevich",
         url: "https://mp3l.jamendo.com/?trackid=1833805&format=mp31&from=aD4XMG1wjAHL9ICgF%2B4oTA%3D%3D%7CAUHw04UM5Z5EVLV24DPsVA%3D%3D",
@@ -67,19 +67,9 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1835782&format=mp31&from=TIJUA9gABV1a1oZg9%2F4OHw%3D%3D%7C%2BV9ynGVG1K6EjhAZoaENQQ%3D%3D",
     },
     {
-        name: "Infinitive Sight",
-        artistName: "Fortadelis",
-        url: "https://mp3l.jamendo.com/?trackid=81016&format=mp31&from=CCzez3IZFvargwFAuUnFCA%3D%3D%7CcJr0EvcjzDzW9n%2B8pZKCpQ%3D%3D",
-    },
-    {
         name: "Waves",
         artistName: "SoulProdMusic",
         url: "https://mp3l.jamendo.com/?trackid=1832333&format=mp31&from=kKm469qJIgkD%2F0qbfpjVmA%3D%3D%7CFJcc9e8Vso55d3wbjDn8WA%3D%3D",
-    },
-    {
-        name: "At the Beach",
-        artistName: "Arto Kumanto",
-        url: "https://mp3l.jamendo.com/?trackid=1835195&format=mp31&from=ikfQepKNx%2FpS8BAKc7ubjA%3D%3D%7C80ZsrGih7foEMbIbacFgkA%3D%3D",
     },
     {
         name: "Lounge Beat (Main Version)",

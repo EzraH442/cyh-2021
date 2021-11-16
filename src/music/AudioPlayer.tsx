@@ -2,15 +2,16 @@ import React from "react";
 import styled from "styled-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-    faPlayCircle, faPauseCircle, faStepForward, faStepBackward, faCaretDown,
+    faPlayCircle, faPauseCircle, faStepForward, faStepBackward, faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import songs from "./songs";
+import { Song } from "./Song";
 import useAudio, { getNextIndexInLoop, getPreviousIndexInLoop } from "./useAudio";
 
 const Wrapper = styled.div`
     border: 1px solid white;
-    padding: 10px;
+    padding: 10px 0;
     text-align: center;
 `;
 
@@ -20,9 +21,37 @@ const IconBar = styled.div`
     justify-content: center;
 `;
 
-const StyledIcon = styled(FontAwesomeIcon)`
-    color="#FF00FF"
+const InfoWrapper = styled.div`
 `;
+
+const MusicInfoText = styled.p`
+    display: none;
+    font-family: 'Raleway';
+    font-size: 14px;
+    
+    ${InfoWrapper}:hover & {
+        display: block;
+        position: absolute;
+        background-color: black;
+        padding: 6px 2px;
+        border: 1px solid white;
+    }
+`;
+
+type StyledMusicInfoTextProps = {
+    song: Song,
+}
+
+const StyledMusicInfoText = ({ song }: StyledMusicInfoTextProps) => (
+    <InfoWrapper>
+        <FontAwesomeIcon
+            icon={faInfoCircle}
+        />
+        <MusicInfoText>
+            {`"${song.name}" by ${song.artistName}`}
+        </MusicInfoText>
+    </InfoWrapper>
+);
 
 type AudioProps = Record<string, never>
 
@@ -32,27 +61,24 @@ const AudioPlayer: React.FC<AudioProps> = () => {
     return (
         <Wrapper>
             <IconBar>
-                <StyledIcon
+                <FontAwesomeIcon
                     icon={faStepBackward}
                     onClick={() => setSongIndex(getPreviousIndexInLoop(songIndex, songs.length))}
                     size="2x"
                 />
-                <StyledIcon
-                    icon={(playing) ? faPlayCircle : faPauseCircle}
+                <FontAwesomeIcon
+                    icon={(playing) ? faPauseCircle : faPlayCircle}
                     onClick={togglePlaying}
                     size="2x"
                 />
-                <StyledIcon
+                <FontAwesomeIcon
                     icon={faStepForward}
-                    onClick={() => {
-                        setSongIndex(getNextIndexInLoop(songIndex, songs.length));
-                    }}
+                    onClick={() => setSongIndex(getNextIndexInLoop(songIndex, songs.length))}
                     size="2x"
                 />
             </IconBar>
-            <StyledIcon
-                icon={faCaretDown}
-                size="2x"
+            <StyledMusicInfoText
+                song={song}
             />
         </Wrapper>
     );
