@@ -21,38 +21,34 @@ const useAudio = (songs : Song[]): [
     const [playing, setPlaying] = useState(false);
     const [song, setSong] = useState(songs[0]);
 
-    const togglePlaying = () => {
-        setPlaying(!playing);
-    };
+    const togglePlaying = () => setPlaying(!playing);
 
     useEffect(() => {
         const abortController = new AbortController();
+
         setSong(songs[songIndex]);
         audio.pause();
         audio.src = songs[songIndex].url;
         audio.load();
         audio.play().catch();
-        return () => {
-            abortController.abort();
-        };
+
+        return () => abortController.abort();
     }, [songIndex]);
 
     useEffect(() => {
-        if (playing) {
-            audio.play();
-        }
+        const abortController = new AbortController();
+
+        if (playing) audio.play().catch();
         else {
             audio.pause();
         }
+
+        return () => abortController.abort();
     }, [playing]);
 
     useEffect(() => {
-        audio.addEventListener("ended", () => {
-            setSongIndex(getNextIndexInLoop(songIndex, songs.length));
-        });
-        return () => {
-            audio.removeEventListener("ended", () => setPlaying(false));
-        };
+        audio.addEventListener("ended", () => setSongIndex(getNextIndexInLoop(songIndex, songs.length)));
+        return () => audio.removeEventListener("ended", () => setPlaying(false));
     }, [songIndex]);
 
     return [playing, togglePlaying, songIndex, setSongIndex, song];

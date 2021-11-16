@@ -62,11 +62,6 @@ const songs: Song[] = [
         url: "https://mp3l.jamendo.com/?trackid=1835244&format=mp31&from=1S1yHPD4nyY%2FQ%2F8D2JSHpA%3D%3D%7Cshk3d4O%2FtmqGlLauUGl2WA%3D%3D",
     },
     {
-        name: "Shades of purple",
-        artistName: "zero-project",
-        url: "https://mp3l.jamendo.com/?trackid=1835782&format=mp31&from=TIJUA9gABV1a1oZg9%2F4OHw%3D%3D%7C%2BV9ynGVG1K6EjhAZoaENQQ%3D%3D",
-    },
-    {
         name: "Waves",
         artistName: "SoulProdMusic",
         url: "https://mp3l.jamendo.com/?trackid=1832333&format=mp31&from=kKm469qJIgkD%2F0qbfpjVmA%3D%3D%7CFJcc9e8Vso55d3wbjDn8WA%3D%3D",
@@ -75,11 +70,6 @@ const songs: Song[] = [
         name: "Lounge Beat (Main Version)",
         artistName: "Silent Station",
         url: "https://mp3l.jamendo.com/?trackid=1829567&format=mp31&from=tSpiMKqOQLPxv6ZzQ4nh7g%3D%3D%7CU7yIbqDaZyeDtsfCDi2ENg%3D%3D",
-    },
-    {
-        name: "Pink Zebra",
-        artistName: "Branton",
-        url: "https://mp3l.jamendo.com/?trackid=827025&format=mp31&from=b2w%2B1IQOGsUHj%2Be2aW13%2Bw%3D%3D%7CLucYHtgM4dZKrd55qlsFzg%3D%3D",
     },
     {
         name: "Intro - jazzy Hallo",

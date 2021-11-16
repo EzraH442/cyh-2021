@@ -15,18 +15,18 @@ const InputBox = styled.div<{width: number, height: number}>`
     justify-content: space-around;
     background-color: black;
     padding: 10px 20px;
-    margin: 5px;
+    margin: 10px;
     border: 1px dashed cyan;
     color: white;
     max-width: ${(props) => `${props.width - 52}px`};
-    height: ${(props) => `${props.height - 32}px`};
+    height: ${(props) => `${props.height - 42}px`};
 `;
 
 const Wrapper = styled.div`
     background-color: black;
     display: flex;
+    justify-content: center;
 `;
-
 
 type AppProps = Record<string, never>
 
