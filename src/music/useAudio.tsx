@@ -48,7 +48,7 @@ const useAudio = (songs : Song[]): [
 
     useEffect(() => {
         audio.addEventListener("ended", () => setSongIndex(getNextIndexInLoop(songIndex, songs.length)));
-        return () => audio.removeEventListener("ended", () => setPlaying(false));
+        return () => audio.removeEventListener("ended", () => setSongIndex(getNextIndexInLoop(songIndex, songs.length)));
     }, [songIndex]);
 
     return [playing, togglePlaying, songIndex, setSongIndex, song];
